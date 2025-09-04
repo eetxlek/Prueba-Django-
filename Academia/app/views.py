@@ -55,7 +55,7 @@ class CursoViewSet(viewsets.ModelViewSet):
     serializer_class = CursoSerializer
 
     @action(detail=True, methods=['get'], url_path='estudiantes')
-    def estudiante(self, request, pk=None):
+    def estudiantes(self, request, pk=None):
         curso = self.get_object()  # obtiene el curso con ese ID
         estudiantes = [matricula.estudiante for matricula in curso.matricula_set.select_related('estudiante')] #accede a todas matriculas
         serializer = EstudianteSerializer(estudiantes, many=True) #serializa lista a json

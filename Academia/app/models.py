@@ -16,7 +16,7 @@ class Curso(models.Model):
     titulo = models.CharField(max_length=100)
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
-    activo = models.BooleanField(default=False) # al crear se crea inactivo, así que no permite
+    activo = models.BooleanField(default=True) # al crear se crea activo
     #  estudiantes = models.ManyToManyField(Estudiante, related_name='cursos', blank=True)
     # No necesario el campo porque hay una table intermedia Matricula
     # acceso a estudiantes a traves de matriculas : curso.matricula_set.all() o curso.matricula_set.count()
@@ -30,7 +30,8 @@ class Matricula(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     fecha_matricula = models.DateField(auto_now_add=True)
     calificacion = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True, validators=[MinValueValidator(0), MaxValueValidator(10)])
-    
+
+    # 2.Layer Model level -- validador de campos
     # metodo especial de Django para validaciones personalizadas en los modelos 
     def clean(self):
         # Regla 1: No permitir matrícula en curso inactivo
@@ -48,15 +49,17 @@ class Matricula(models.Model):
         # si ya hay registro matricula con igual (compara primary key), lanza error
         if Matricula.objects.filter(estudiante=self.estudiante, curso=self.curso).exclude(pk=self.pk).exists():
             raise ValidationError("El estudiante ya está matriculado en este curso.")
-        
-    #  Sobreescribe el save de modelo para validar datos antes de guardar.    
+
+    # 3.Validación a través de señal o hook de Django (App Layer / Signal Layer)    A  nivel entorno Django, presave
+    #  Sobreescribe el save de modelo para validar datos antes de guardar.    # señal logica previa a guardar. Save sobreescrito.
     def save(self, *args, **kwargs):
-        self.clean()  
+        self.clean()     # llamar a clean es similar a enganchar señar presave porque lo hace antes de guardar. 
         super().save(*args, **kwargs)
 
-    # evita que guarden duplicados incluso si se hace una operacion de insert directo con SQL
+    # 1.Layer de Database #valida registros de BD
+    # evita que guarden duplicados incluso si se hace una operacion de insert directo con SQL  
     class Meta:
-        unique_together = ('estudiante', 'curso')
+        unique_together = ('estudiante', 'curso') 
 
     def __str__(self):
         return f"{self.estudiante.nombre} - {self.curso.titulo}"

@@ -19,6 +19,13 @@ from django.urls import path, include
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from rest_framework.routers import DefaultRouter
+from app.views import EstudianteViewSet, CursoViewSet, MatriculaViewSet
+
+router = DefaultRouter()
+router.register(r'estudiantes', EstudianteViewSet)
+router.register(r'cursos', CursoViewSet)
+router.register(r'matriculas', MatriculaViewSet)
 
 # Configuración de Swagger
 schema_view = get_schema_view(
@@ -33,7 +40,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls), # Panel de administración de Django, si usas admin
-    path('api/', include('app.urls')), # Mis endpoints del API
+    path('api/', include(router.urls)), # Mis endpoints del API
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'), # Documentacion interactiva Swagger
      #path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'), # Devuelve el esquema en JSON o YAML,   NO NECESARIO, para generar clientes y validaciones automaticas
 ]

@@ -68,7 +68,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
-ROOT_URLCONF = 'Academia.urls'
+ROOT_URLCONF = 'academia_api.urls'
 
 TEMPLATES = [
     {
@@ -85,7 +85,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Academia.wsgi.application'
+WSGI_APPLICATION = 'academia_api.wsgi.application'
 
 
 # Database

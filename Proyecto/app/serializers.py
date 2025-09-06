@@ -1,4 +1,4 @@
-from django.forms import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from .models import Estudiante, Curso, Matricula
 
@@ -31,8 +31,8 @@ class MatriculaSerializer(serializers.ModelSerializer):
                 instance.pk = self.instance.pk
             try:
                 instance.clean()  # Ejecuta reglas de negocio definidas en el modelo
-            except ValidationError as e:
-                raise serializers.ValidationError(e.message_dict)  # Error se atrapa dentro de DRF y view devuelve 400 con detalles
+            except DjangoValidationError as e:
+                raise serializers.ValidationError(e.message_dict if hasattr(e, 'message_dict') else {'non_field_errors': e.messages})  # Error se atrapa dentro de DRF y view devuelve 400 con detalles
 
             return data
       

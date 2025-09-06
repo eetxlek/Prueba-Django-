@@ -1,21 +1,15 @@
-
 from rest_framework.exceptions import ValidationError
 from rest_framework import viewsets, status
-from rest_framework.exceptions import NotFound # exception manejada con la respuesta 404
 from django.db import IntegrityError 
 from .models import Estudiante, Curso, Matricula
 from .serializers import EstudianteSerializer, CursoSerializer, MatriculaSerializer
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.decorators import action #para rutas personalizadas
 from rest_framework import filters
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-#opcion1 funcion en vez de vista: http://localhost:8000/api/app/ funcionará.
-#@api_view(['GET'])
-#def algun_api(request):
- #   return Response({"mensaje": "Hola desde DRF"})
+#opcion1 apiview. funcion en vez de vista: http://localhost:8000/api/app/ funcionará.
 
 #opcion2 usar DRF routers con la clases. Remplaza las rutas en app y en prueba
 
@@ -24,7 +18,7 @@ class EstudianteViewSet(viewsets.ModelViewSet):
     queryset = Estudiante.objects.all()
     serializer_class = EstudianteSerializer
 
-    # Parametros en crear un estudiante  POST
+    # Param  POST ESTUDIANTE
     @swagger_auto_schema(
     operation_description="Crear un nuevo estudiante",
     request_body=EstudianteSerializer,
@@ -36,7 +30,7 @@ class EstudianteViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
     
-    #customizacion de parametros en update de estudiante  PUT
+    #Param PUT ESTUDIANTE
     @swagger_auto_schema(
     operation_description="Actualizar un estudiante existente",
     request_body=EstudianteSerializer,
@@ -49,12 +43,13 @@ class EstudianteViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
     
-    #filtros por termino y orden  en GET
+    #Filtros por termino y orden GET
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['nombre', 'email']  # Búsqueda en nombre y email
     ordering_fields = ['nombre', 'email', 'fecha_registro']  # Campos para ordenar
     ordering = ['nombre']  # Orden alfabético por defecto
-    # ✅ Documentar MANUALMENTE los parámetros de filtro
+
+    # Documentacion parámetros GET ESTUDIANTES
     @swagger_auto_schema(  
          manual_parameters=[
             openapi.Parameter(
@@ -81,7 +76,7 @@ class EstudianteViewSet(viewsets.ModelViewSet):
         """
         return super().list(request, *args, **kwargs)
     
-    #endpoint adicional  GET estudiante/{id}/cursos para obtener cursos del estudiante
+    #ENDPOINT adicional  GET estudiante/{id}/cursos 
     @swagger_auto_schema(
         operation_description="Obtiene todos los cursos en los que está matriculado un estudiante",
         responses={
@@ -99,7 +94,7 @@ class EstudianteViewSet(viewsets.ModelViewSet):
         serializer = CursoSerializer(cursos, many=True)
         return Response(serializer.data)
     
-    # custom endpoint para reporte del estudiante
+    # CUSTOM ENDPOINT para reporte GET estudiantes/{id}/reporte/
     @swagger_auto_schema(
         operation_description="Genera un reporte académico del estudiante con sus cursos y calificación media",
         responses={
@@ -122,13 +117,11 @@ class EstudianteViewSet(viewsets.ModelViewSet):
     def reporte(self, request, pk=None):
         estudiante = self.get_object()
 
-        # Obtener todos los cursos en los que está matriculado
+        # Obtener todos los cursos matriculados
         matriculas = estudiante.matricula_set.select_related('curso')
        
         if not matriculas.exists():
-            # esto seria para lanzar un error, pero quiero que devuelva una respuesta 
-            #raise NotFound("Este estudiante no tiene cursos matriculados.")  # 404
-            
+            #raise NotFound("Este estudiante no tiene cursos matriculados.")  # 404 capturado
             #RESPUESTA con mensaje, json y status 404
             return Response(
             {
@@ -141,29 +134,32 @@ class EstudianteViewSet(viewsets.ModelViewSet):
         )
         cursos = [m.curso.titulo for m in matriculas]
 
-        # Calcular promedio solo si hay calificaciones no nulas
-        calificaciones = [m.calificacion for m in matriculas if m.calificacion is not None]
-        media = sum(calificaciones) / len(calificaciones) if calificaciones else None
+        # Calcular promedio solo si NO null
+        calificaciones = [
+            matricula.calificacion for matricula in matriculas
+            if matricula.calificacion is not None
+        ]
+        media = round(sum(calificaciones) / len(calificaciones),2) if calificaciones else None
 
         data = {
             "nombre": estudiante.nombre,
             "cursos": cursos,
-            "media_calificacion": round(media, 2) if media is not None else None
+            "media_calificacion": media
         }
 
         return Response(data)
 
-class CursoViewSet(viewsets.ModelViewSet):  #modelviewset proporciona todo el CRUD basico.
+class CursoViewSet(viewsets.ModelViewSet):  
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
 
-    #filtros por termino y ordenamiento
+    #Filtros por termino y orden
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['activo']  # Aparece como parámetro filter[activo]
     search_fields = ['titulo', 'descripcion']  # Aparece como parámetro search
     ordering_fields = ['titulo', 'fecha_inicio']  # Aparece como parámetro ordering
 
-    # Documentar parámetros de filtro  de GET
+    # Documentar parámetros de filtro en GET  CURSOS
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
@@ -195,7 +191,7 @@ class CursoViewSet(viewsets.ModelViewSet):  #modelviewset proporciona todo el CR
         """
         return super().list(request, *args, **kwargs)
     
-    # endpoint adicional para obtener estudiantes matriculados en un curso (ID)
+    # Endpoint adicional GET curso/{id}/estudiantes
     @swagger_auto_schema(
         method='get',
         operation_description="Obtiene todos los estudiantes matriculados en un curso específico",
@@ -243,8 +239,8 @@ class CursoViewSet(viewsets.ModelViewSet):  #modelviewset proporciona todo el CR
     @action(detail=True, methods=['get'], url_path='estudiantes')
     def estudiantes(self, request, pk=None):
         curso = self.get_object()  # obtiene el curso con ese ID
-        estudiantes = [matricula.estudiante for matricula in curso.matricula_set.select_related('estudiante')] #accede a todas matriculas
-        serializado = EstudianteSerializer(estudiantes, many=True) #serializa lista a json
+        estudiantes = [matricula.estudiante for matricula in curso.matricula_set.select_related('estudiante')] 
+        serializado = EstudianteSerializer(estudiantes, many=True) 
         return Response(serializado.data)
 
 class MatriculaViewSet(viewsets.ModelViewSet):
@@ -257,7 +253,7 @@ class MatriculaViewSet(viewsets.ModelViewSet):
     ordering_fields = ['fecha_matricula', 'calificacion', 'estudiante__nombre', 'curso__titulo']
     ordering = ['-fecha_matricula']  # Más recientes primero
 
-    # doecumentar listado con parametros de search y orden     GET
+    #Documentar parametros de search y orden de  GET MATRICULAS
     @swagger_auto_schema(
         manual_parameters=[
                 openapi.Parameter(
@@ -315,7 +311,7 @@ class MatriculaViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
-    #create matricula
+    #Documentar POST MATRICULA
     @swagger_auto_schema(
          operation_description="Crear una nueva matrícula de estudiante en un curso",
         request_body=MatriculaSerializer,
@@ -345,13 +341,14 @@ class MatriculaViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         try:
-            serializer.is_valid(raise_exception=True)  # excepcion si falla validación o da false  VS el validate lanza un ValidationError
+            serializer.is_valid(raise_exception=True) # llama a validate del serializer y a clean del modelo
             self.perform_create(serializer) #internamente llama a serializer.save y a model.save.
         
         except ValidationError as e:
             return Response({"error": e.detail}, status=status.HTTP_400_BAD_REQUEST)
+        
         except IntegrityError as e:
-            # Esto ocurre si se viola unique_together en DB (ej. matrícula duplicada)
+            # Esto si viola unique_together en DB (ej. matrícula duplicada)
             return Response(
                 {"error": "El estudiante ya está matriculado en este curso."},
                 status=status.HTTP_409_CONFLICT

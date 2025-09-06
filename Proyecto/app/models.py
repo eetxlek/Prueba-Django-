@@ -16,9 +16,9 @@ class Curso(models.Model):
     titulo = models.CharField(max_length=100)
     descripcion = models.TextField()
     fecha_inicio = models.DateField()
-    activo = models.BooleanField(default=True) # al crear se crea activo
+    activo = models.BooleanField(default=True) 
     #  estudiantes = models.ManyToManyField(Estudiante, related_name='cursos', blank=True)
-    # No necesario el campo porque hay una table intermedia Matricula
+    # No es necesario el campo porque hay una table intermedia Matricula
     # acceso a estudiantes a traves de matriculas : curso.matricula_set.all() o curso.matricula_set.count()
     # tambien... estudiantes = Estudiante.objects.filter(matricula__curso=curso)
 
@@ -46,14 +46,14 @@ class Matricula(models.Model):
 
         # Regla 3: Evitar matrícula duplicada (ya cubierta en unique_together)
         # Busca si ya existe una matrícula con el mismo estudiante y curso.
-        # si ya hay registro matricula con igual (compara primary key), lanza error
+        # si ya hay matricula con ese primary key, lanza error
         if Matricula.objects.filter(estudiante=self.estudiante, curso=self.curso).exclude(pk=self.pk).exists():
             raise ValidationError("El estudiante ya está matriculado en este curso.")
 
-    # 3.Validación a través de señal o hook de Django (App Layer / Signal Layer)    A  nivel entorno Django, presave
-    #  Sobreescribe el save de modelo para validar datos antes de guardar.    # señal logica previa a guardar. Save sobreescrito.
+    # 3.Validación a través de señal o hook de Django (App Layer / Signal Layer) 
+     # señal logica previa a guardar, save de modelo sobreescrito .   
     def save(self, *args, **kwargs):
-        self.clean()     # llamar a clean es similar a enganchar señar presave porque lo hace antes de guardar. 
+        self.clean()     #  antes de guardar valida modelo. 
         super().save(*args, **kwargs)
 
     # 1.Layer de Database #valida registros de BD

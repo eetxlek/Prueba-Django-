@@ -22,6 +22,7 @@ from drf_yasg import openapi
 from rest_framework.routers import DefaultRouter
 from app.views import EstudianteViewSet, CursoViewSet, MatriculaViewSet
 
+# para asociar vista a /api  aunque aun te faltaria asociar vistas tambien para esas urls, que no lo veo mucho sentido ahora mismo.
 router = DefaultRouter()
 router.register(r'estudiantes', EstudianteViewSet)
 router.register(r'cursos', CursoViewSet)

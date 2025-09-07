@@ -195,7 +195,6 @@ class CursoViewSet(viewsets.ModelViewSet):
     @swagger_auto_schema(
         method='get',
         operation_description="Obtiene todos los estudiantes matriculados en un curso específico",
-        operation_summary="Listar estudiantes del curso",
         manual_parameters=[
             openapi.Parameter(
                 'id',

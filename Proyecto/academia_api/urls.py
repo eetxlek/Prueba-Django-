@@ -43,5 +43,6 @@ urlpatterns = [
     path('admin/', admin.site.urls), # Panel de administración de Django, si usas admin
     path('api/', include(router.urls)), # Mis endpoints del API
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'), # Documentacion interactiva Swagger
+    path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'), #redireccion directa al swagger 
      #path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'), # Devuelve el esquema en JSON o YAML,   NO NECESARIO, para generar clientes y validaciones automaticas
 ]

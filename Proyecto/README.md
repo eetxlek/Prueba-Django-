@@ -8,7 +8,7 @@ API RESTful para la gestión de estudiantes, cursos y matrículas. Desarrollada 
 
 Este proyecto se entrega como un archivo `.zip` con la siguiente estructura:
 
-academia_api/
+Proyecto/
 │
 ├── academia_api/ # Configuración principal del proyecto Django
 ├── academia_app/ # Aplicación con modelos, vistas y serializadores
@@ -29,7 +29,7 @@ Descomprime el archivo `Prueba_tecnica_academia.zip` en tu escritorio o en una c
 
 ```bash
 # Dentro de la carpeta del proyecto:
-cd academia_api
+cd Proyecto
 
 # Crear entorno virtual
 python -m venv venv

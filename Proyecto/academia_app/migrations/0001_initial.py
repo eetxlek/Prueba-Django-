@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('titulo', models.CharField(max_length=100)),
                 ('descripcion', models.TextField()),
                 ('fecha_inicio', models.DateField()),
-                ('activo', models.BooleanField(default=False)),
+                ('activo', models.BooleanField(default=True)),
             ],
         ),
         migrations.CreateModel(

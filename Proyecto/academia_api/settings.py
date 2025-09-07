@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'drf_yasg',
-    'app',
+    'academia_app',
 ]
 # Configuración de REST Framework
 REST_FRAMEWORK = {

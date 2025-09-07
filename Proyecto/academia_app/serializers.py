@@ -1,4 +1,4 @@
-from django.forms import ValidationError
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
 from .models import Estudiante, Curso, Matricula
 

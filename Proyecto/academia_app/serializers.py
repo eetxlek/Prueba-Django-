@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import Estudiante, Curso, Matricula
 
@@ -22,17 +22,21 @@ class MatriculaSerializer(serializers.ModelSerializer):
         # sobreescritura de validate de DRF o hook/gancho que forma parte del ciclo de vida del serializer. 
         # Permite validacion personalizada sobre objetos (varios campos a la vez)
         # integra el clean al flujo validacion de DRF
-        def validate(self, data):   #drf devuelve un 400 Bad request mediante el def clean.
+    def validate(self, data):   #drf devuelve un 400 Bad request mediante el def clean.
             # Crear una instancia temporal con los datos recibidos en DRF serializer.is_valid(campo o objeto) que llama internamente a este validate.
-            instance = Matricula(**data)
+        instance = Matricula(**data)
             #esta instancia no tiene .pk , django trata como nueva instancia. En clean al filtrar matricula puede fallar actualizacion. 
             # pk es necesario para diferenciar crear de actualizar en el clean. Conservamos antes de pasar al clean. Evita FALSOS POSITIVOS. 
-            if self.instance:
-                instance.pk = self.instance.pk
-            try:
-                instance.clean()  # Ejecuta reglas de negocio definidas en el modelo
-            except ValidationError as e:
-                raise serializers.ValidationError(e.message_dict)  # Error se atrapa dentro de DRF y view devuelve 400 con detalles
-
-            return data
-      
+        if self.instance:
+            instance.pk = self.instance.pk
+        try:
+            instance.clean()  # Ejecuta reglas de negocio definidas en el modelo
+        except ValidationError as e:
+                #el ValidationError de Django tiene message_dict y messages pero DRF espera un dict con lista de errores
+            if hasattr(e, 'message_dict'):
+                raise serializers.ValidationError(e.message_dict)  # Error se atrapa dentro de DRF y view devuelve 400 con detalles                
+            else:
+                raise serializers.ValidationError({'non_field_errors': e.messages}) #si da un error de srting plano lo asocia a nonfield_errors para evitar error de atributo
+        return data
+        #validate daba un string plano, y DRF espera un dict con listas de errores por campo.
+        # eso lanza un AttributeError, porque e no tiene message_dict si el error fue creado con un string.

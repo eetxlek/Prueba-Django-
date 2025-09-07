@@ -215,7 +215,7 @@ class EstudianteSerializerTest(TestCase):
         self.assertEqual(data['email'], 'ana@test.com')
         self.assertIn('fecha_registro', data)
     
-    def test_deserialize_valid_estudiante(self):
+    def test_deserialize_valid_estudiante(self):     
         """Test deserializing valid student data"""
         data = {
             'nombre': 'Carlos Ruiz',

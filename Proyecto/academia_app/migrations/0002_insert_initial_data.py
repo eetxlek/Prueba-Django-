@@ -3,9 +3,9 @@ from datetime import date, timedelta
 
 def insert_initial_data(apps, schema_editor):
     # Obtener modelos desde apps (no directamente importados)
-    Estudiante = apps.get_model('app', 'Estudiante')
-    Curso = apps.get_model('app', 'Curso')
-    Matricula = apps.get_model('app', 'Matricula')
+    Estudiante = apps.get_model('academia_app', 'Estudiante')
+    Curso = apps.get_model('academia_app', 'Curso')
+    Matricula = apps.get_model('academia_app', 'Matricula')
 
     # Crear estudiantes iniciales
     estudiantes = [
@@ -63,9 +63,9 @@ def insert_initial_data(apps, schema_editor):
     Matricula.objects.bulk_create([m for m in matriculas if m.curso.activo and m.curso.fecha_inicio >= hoy])
 
 def reverse_initial_data(apps, schema_editor):
-    Estudiante = apps.get_model('app', 'Estudiante')
-    Curso = apps.get_model('app', 'Curso')
-    Matricula = apps.get_model('app', 'Matricula')
+    Estudiante = apps.get_model('academia_app', 'Estudiante')
+    Curso = apps.get_model('academia_app', 'Curso')
+    Matricula = apps.get_model('academia_app', 'Matricula')
 
     # Borrar en orden inverso por integridad referencial
     Matricula.objects.all().delete()
@@ -75,7 +75,7 @@ def reverse_initial_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0001_initial'),
+       ('academia_app', '0001_initial'),
     ]
 
     operations = [

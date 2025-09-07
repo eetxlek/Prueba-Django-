@@ -20,7 +20,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.routers import DefaultRouter
-from app.views import EstudianteViewSet, CursoViewSet, MatriculaViewSet
+from academia_app.views import EstudianteViewSet, CursoViewSet, MatriculaViewSet
 
 # para asociar vista a /api  aunque aun te faltaria asociar vistas tambien para esas urls, que no lo veo mucho sentido ahora mismo.
 router = DefaultRouter()

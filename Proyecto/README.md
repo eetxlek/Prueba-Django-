@@ -8,14 +8,14 @@ API RESTful para la gestión de estudiantes, cursos y matrículas. Desarrollada 
 
 Este proyecto se entrega como un archivo `.zip` con la siguiente estructura:
 
-Proyecto/
-│
-├── academia_api/ # Configuración principal del proyecto Django
-├── academia_app/ # Aplicación con modelos, vistas y serializadores
-├── db.sqlite3 # Base de datos preconfigurada (opcional)
-├── manage.py # Script de gestión de Django
-├── requirements.txt # Dependencias del proyecto
-└── README.md # Esta guía de instalación
+Proyecto/  
+│  
+├── academia_api/ # Configuración principal del proyecto Django  
+├── academia_app/ # Aplicación con modelos, vistas y serializadores  
+├── db.sqlite3 # Base de datos preconfigurada (opcional)  
+├── manage.py # Script de gestión de Django  
+├── requirements.txt # Dependencias del proyecto  
+└── README.md # Esta guía de instalación  
 
 ## Pasos para ejecutar la aplicación
 
@@ -61,8 +61,8 @@ python manage.py runserver
 
 Documentación interactiva de la API:
 
-http://127.0.0.1:8000
-http://127.0.0.1:8000/swagger/
+http://127.0.0.1:8000  
+http://127.0.0.1:8000/swagger/  
 
 ## Ejecutar pruebas
 

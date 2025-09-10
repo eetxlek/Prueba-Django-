@@ -64,6 +64,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://mi-frontend.com",
+    "https://academia-django.onrender.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

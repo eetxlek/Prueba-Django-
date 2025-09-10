@@ -22,8 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-jslt7hl+6l5umi6*3o8f*fwu!-c4+c82_x=(3be+_7qp$j##h#'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# SECURITY WARNING: don't run with debug turned on in production! En produccion false
+DEBUG = False 
 
 ALLOWED_HOSTS = ['academia-django.onrender.com']
 
